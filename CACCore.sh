@@ -1,8 +1,16 @@
 #!/bin/bash
-clear
-curl --ssl-no-revoke https://raw.githubusercontent.com/TanRayCz/CAC/master/hosts.txt > hosts.txt 2> nul
 
-cac_exit () {
+ARMA_PATH="/media/SSD/SteamLibrary/steamapps/common/Arma 3"
+#TODO use find / -type f -name arma3_x64.exe 2>/dev/null ?  or force place in arma dir
+
+arma_path="/media/SSD/SteamLibrary/steamapps/common/Arma 3/"
+proton_path="/home/unladencoconut/.local/share/Steam/steamapps/common/Proton - Experimental/proton"
+
+clear
+#this is redundant
+#curl --ssl-no-revoke https://raw.githubusercontent.com/TanRayCz/CAC/master/hosts.txt > hosts.txt 2> nul
+
+cacExit () {
    clear
    echo -e "\e[m"
    exit
@@ -31,24 +39,23 @@ else
    #check if steam running
    if ! pgrep steam &> /dev/null; then
       yellow
-      echo "steam not  running, attempting to run steam."
+      echo "steam not running, attempting to run steam."
       steam &> /dev/null &
       sleep 1 #TODO timeout loop wait on pgrep?
       if ! pgrep steam &> /dev/null; then
          red
          echo "failed to launch steam."
-         sleep 2
-         cac_exit
+         sleep 3
+         cacExit
       else
          green
          echo "steam launched successfully."
       fi
    else
       green
-      echo "steam is running."
+     #echo "steam is running."
    fi
 fi
-sleep 2
 
 ### config loading / set defaults
 
@@ -60,7 +67,7 @@ armaUserName=$(<CACCore/username.txt)
 [ -f CACCore/password.txt ] && password=$(<CACCore/password.txt)
 
 [ -f CACCore/moddir.txt ] && modPath=$(<CACCore/moddir.txt)
-! [ -f CACCore/moddir.txt ] && modPath=./Mods
+! [ -f CACCore/moddir.txt ] && modPath=Mods/ #TODO proper concat of relative path e.g. ./Mods goes to arma 3/mods not arma 3/./mods - . doesnt exist in win file system
 
 ### server connection vars
 
@@ -69,40 +76,56 @@ ip2=cacservers.servebeer.com
 ip3=cackoth.servebeer.com
 ip4=unladencoconut.ddns.net
 ip5=theghost.ddns.net
-A1='start "" /normal arma3_x64 -skipIntro -noSplash -world=empty -exThreads=7 -enableHT -connect=%ip% -name="%ArmaUserName%"'
-A2='start "" /normal arma3_x64 -skipIntro -noSplash -world=empty -exThreads=7 -enableHT -setThreadCharacteristics -connect=%ip2% -name="%ArmaUserName%"'
-A3='start "" /normal arma3_x64 -skipIntro -noSplash -world=empty -exThreads=7 -enableHT -connect=%ip3% -name="%ArmaUserName%"'
-A4='start "" /normal arma3_x64 -skipIntro -noSplash -world=empty -exThreads=7 -enableHT -setThreadCharacteristics -connect=%ip4% -name="%ArmaUserName%"'
-A5='start "" /normal arma3_x64 -skipIntro -noSplash -world=empty -exThreads=7 -enableHT -setThreadCharacteristics -connect=%ip5% -name="%ArmaUserName%"'
+arma_cmd="-skipIntro -noSplash -world=empty -exThreads=7 -enableHT -hugepages -setThreadCharacteristics -name=\$armaUserName"
 
 ### launch server functions
+# arma just hangs ,no errors, wont connect, wont escape to menu
+runner () {
+   ! [ -d ./compat_data ] && mkdir compat_data #create proton/wine prefix if one doesnt exist here
+   export STEAM_COMPAT_DATA_PATH="$(pwd)/compat_data"
+   export STEAM_COMPAT_CLIENT_INSTALL_PATH="${HOME}/.local/share/Steam"
+
+   PROTON_PATH="${HOME}/.local/share/Steam/steamapps/common/Proton - Experimental"
+   cd "$ARMA_PATH"
+   nohup "${PROTON_PATH}/proton" waitforexitandrun "${ARMA_PATH}/arma3_x64.exe" $1 &> /dev/null &
+   cacExit
+}
 
 antistasi1 () {
-   :
+   eval tmp=\"$tmp\"
+   runner "$tmp"
 }
 
 antistasi2 () {
-   :
+   tmp="$arma_cmd -connect=$ip2 -port=2702 \\\"-mod=RF;\${modPath}@CUPTerrainsCore;\${modPath}@Sumava;\${modPath}@RHSAFRF;\${modPath}@RHSGREF;\${modPath}@RHSUSAF;\${modPath}@RHSSAF;\${modPath}@ace;\${modPath}@CBA_A3;\${modPath}@AntistasiUltimate;\${modPath}@cac_aue;\${modPath}@AWR;\${modPath}@RealEngine;\${modPath}@EnhancedMovement;\${modPath}@EnhancedMovementRework;\${modPath}@VET_Unflipping;\${modPath}@ace_nouniformrestrictions;\${modPath}@AdvancedRappelling;\${modPath}@AdvancedUrbanRappelling;\${modPath}@ACEGrenades\\\""
+   eval tmp=\"$tmp\"
+   runner "$tmp"
 }
 
 exileTanoa () {
-   :
+   eval tmp=\"$tmp\"
+   runner "$tmp"
 }
 
 kingOfTheHill () {
-   :
+   eval tmp=\"$tmp\"
+   runner "$tmp"
 }
 
 exileEscape () {
-   :
+   eval tmp=\"$tmp\"
+   runner "$tmp"
 }
 
 liberation () {
-   :
+   tmp="$arma_cmd -connect=$ip5 -port=2100 \\\"-mod=\${modPath}@ace;\${modPath}@ACEGrenades;\${modPath}@ace_nouniformrestrictions;\${modPath}@CBA_A3;\${modPath}@RHSAFRF;\${modPath}@RHSGREF;\${modPath}@RHSUSAF;\${modPath}@RealEngine;\${modPath}@EnhancedMovement;\${modPath}@EnhancedMovementRework;\${modPath}@VET_Unflipping;\${modPath}@AdvancedRappelling;\${modPath}@AdvancedUrbanRappelling;\${modPath}@USAF;\${modPath}@USAF_AC130_BETA;\${modPath}@CUPTerrainsCore;\${modPath}@AWR;\${modPath}@Yulakia;\${modPath}@KPRanks\\\""
+   eval tmp=\"$tmp\"
+   runner "$tmp"
 }
 
 specOps () {
-   :
+   eval tmp=\"$tmp\"
+   runner "$tmp"
 }
 
 statusChanger () {
@@ -124,7 +147,6 @@ cacSettings () {
 clear
 echo -e "\e[0;32m"
 
-echo "should be green"
 echo "Arma 3 CAC Launcher"
 
 echo
@@ -156,12 +178,12 @@ case $in in
  6) liberation ;;
  7) specOps ;;
  9) cacSettings ;;
- 0) cac_exit ;;
+ 0) cacExit ;;
 esac
 
 #use later: 
 #read -p "set exile password: " password && echo $password > CACCore/password.txt
 echo "debug - eof"
 sleep 1
-cac_exit
+cacExit
 

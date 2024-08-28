@@ -20,3 +20,4 @@ CACCore/moddir.txt
 .vs/CAC/FileContentIndex/read.lock
 CACCore/modcheck.bat
 *.vsidx
+compat_data/
